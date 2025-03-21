@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Healthcare Economic Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            display: flex;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            height: 100vh;
+            background-color: #f4f4f9;
+        }
+        .sidebar {
+            width: 200px;
+            background: #333;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            padding-top: 20px;
+            transition: 0.3s;
+        }
+        .sidebar a {
+            padding: 15px;
+            text-decoration: none;
+            color: white;
+            font-size: 18px;
+            text-align: center;
+            transition: 0.3s;
+            cursor: pointer;
+        }
+        .sidebar a:hover {
+            background: #575757;
+        }
+        .content {
+            flex: 1;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        canvas {
+            max-width: 700px;
+            max-height: 400px;
+            animation: fadeIn 1s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <a onclick="showGraph('healthExpenditureChart')">Healthcare Expenditure</a>
+        <a onclick="showGraph('lifeExpectancyChart')">Life Expectancy</a>
+        <a onclick="showGraph('mortalityChart')">Mortality Rate</a>
+        <a onclick="showGraph('budgetAllocationChart')">Health Budget Allocation</a>
+    </div>
+
+    <div class="content">
+        <canvas id="healthExpenditureChart"></canvas>
+        <canvas id="lifeExpectancyChart" style="display:none;"></canvas>
+        <canvas id="mortalityChart" style="display:none;"></canvas>
+        <canvas id="budgetAllocationChart" style="display:none;"></canvas>
+    </div>
+
+    <script>
+        function showGraph(chartId) {
+            document.querySelectorAll("canvas").forEach(chart => {
+                chart.style.display = "none"; 
+            });
+            document.getElementById(chartId).style.display = "block"; 
+        }
+
+        new Chart(document.getElementById("healthExpenditureChart"), {
+            type: "line",
+            data: {
+                labels: ["2018", "2019", "2020", "2021", "2022", "2023"],
+                datasets: [{
+                    label: "Healthcare Expenditure (% of GDP)",
+                    data: [3.5, 3.7, 4.0, 4.2, 4.5, 4.8],
+                    borderColor: "blue",
+                    fill: false
+                }]
+            },
+            options: { responsive: true }
+        });
+
+        new Chart(document.getElementById("lifeExpectancyChart"), {
+            type: "bar",
+            data: {
+                labels: ["2018", "2019", "2020", "2021", "2022", "2023"],
+                datasets: [{
+                    label: "Life Expectancy (Years)",
+                    data: [68, 69, 70, 71, 72, 73],
+                    backgroundColor: "green"
+                }]
+            },
+            options: { responsive: true }
+        });
+
+        new Chart(document.getElementById("mortalityChart"), {
+            type: "line",
+            data: {
+                labels: ["2018", "2019", "2020", "2021", "2022", "2023"],
+                datasets: [
+                    {
+                        label: "Infant Mortality Rate (per 1000 births)",
+                        data: [35, 32, 30, 28, 26, 24],
+                        borderColor: "red",
+                        fill: false
+                    },
+                    {
+                        label: "Maternal Mortality Rate (per 100,000 births)",
+                        data: [120, 115, 110, 105, 100, 95],
+                        borderColor: "orange",
+                        fill: false
+                    }
+                ]
+            },
+            options: { responsive: true }
+        });
+
+        new Chart(document.getElementById("budgetAllocationChart"), {
+            type: "pie",
+            data: {
+                labels: ["Hospitals", "Primary Care", "Research", "Public Health", "Others"],
+                datasets: [{
+                    label: "Budget Allocation",
+                    data: [30, 25, 15, 20, 10], 
+                    backgroundColor: ["blue", "green", "red", "yellow", "purple"]
+                }]
+            },
+            options: { responsive: true }
+        });
+    </script>
+</body>
+</html>

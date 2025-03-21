@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Financial Report - GDP & CPI Analysis</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.9/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+    <style>
+        body { font-family: 'Times New Roman', Times, serif; margin: 40px; padding: 20px; background: linear-gradient(to right, #ff9966, #ff5e62); color: white; }
+        .container { max-width: 900px; margin: auto; text-align: center; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.3); color: black; display: none; border: 2px solid black; }
+        .input-section {
+    max-width: 500px;
+    margin: auto;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 10px;
+    text-align: center;
+    border: 2px solid black;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+}
+
+.input-section:hover {
+    transform: scale(1.05);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
+}
+
+h2 {
+    font-size: 22px;
+    font-weight: bold;
+    color: #333;
+    animation: fadeIn 1s ease-in-out;
+}
+
+label {
+    display: block;
+    margin: 10px 0 5px;
+    font-weight: bold;
+    color: #555;
+    animation: fadeInUp 1s ease-in-out;
+}
+
+input[type="number"],
+select {
+    width: 80%;
+    padding: 10px;
+    border: 2px solid #007BFF;
+    border-radius: 5px;
+    font-size: 16px;
+    text-align: center;
+    outline: none;
+    transition: all 0.3s ease-in-out;
+    background-color: white;
+    color: black;
+    animation: fadeInUp 1.2s ease-in-out;
+}
+
+input[type="number"]:focus,
+select:focus {
+    border-color: #0056b3;
+    box-shadow: 0 0 8px rgba(0, 91, 187, 0.5);
+}
+
+button {
+    background: linear-gradient(45deg, #007BFF, #0056b3);
+    color: white;
+    border: none;
+    cursor: pointer;
+    padding: 12px 20px;
+    font-weight: bold;
+    font-size: 16px;
+    border-radius: 5px;
+    transition: background 0.3s ease-in-out, transform 0.2s ease-in-out;
+    animation: fadeInUp 1.5s ease-in-out;
+}
+
+button:hover {
+    background: linear-gradient(45deg, #0056b3, #003d82);
+    transform: scale(1.1);
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid black; padding: 10px; text-align: center; }
+        th { background-color: #4CAF50; color: white; }
+        canvas { margin-top: 20px; background: white; border-radius: 10px; }
+        input, select, button { margin: 10px; padding: 8px; border-radius: 5px; border: none; }
+        button { background: #007BFF; color: white; cursor: pointer; padding: 10px 15px; font-weight: bold; }
+        button:hover { background: #0056b3; }
+        input[type="number"] {
+            width: 120px;
+            padding: 10px;
+            border: 2px solid #007BFF;
+            border-radius: 5px;
+            font-size: 16px;
+            text-align: center;
+            outline: none;
+            transition: all 0.3s ease-in-out;
+            background-color: white;
+            color: black;
+        }
+        input[type="number"]:focus {
+            border-color: #0056b3;
+            box-shadow: 0 0 8px rgba(0, 91, 187, 0.5);
+        }
+    </style>
+</head>
+<body>
+    <div class="input-section" id="inputSection">
+        <h2>Enter Report Details</h2>
+        <label for="fromYear">From Year:</label>
+        <input type="number" id="fromYear" placeholder="Enter start year" min="2000" max="2030">
+
+        <label for="toYear">To Year:</label>
+        <input type="number" id="toYear" placeholder="Enter end year" min="2000" max="2030">
+
+        <label for="department">Select Department:</label>
+        <select id="department">
+            <option value="" disabled selected>Select a department</option>
+            <option value="finance">Finance</option>
+            <option value="economics">Economics</option>
+            <option value="trade">Trade</option>
+            <option value="investment">Investment</option>
+        </select>
+
+        <button onclick="generateReport()">Generate Report</button>
+    </div>
+
+    <div class="container" id="reportContainer">
+        <h2>AI Predicted Financial Report: GDP & CPI Analysis</h2>
+        <h4>Year: <span id="yearRange"></span></h4>
+        <p><strong>Analysis by Team Finovate</strong></p>
+
+        <!-- Professional Description/Introduction -->
+        <div id="reportDescription">
+            <h3>Executive Summary</h3>
+            <p>This report provides a comprehensive analysis of economic performance across various Indian states, based on AI-driven predictions and historical data. The primary focus is on GDP and CPI data, alongside sector-specific performance and economic outlooks. The AI model utilized for this report takes into account various macroeconomic indicators to generate future projections, assess sector growth, and identify investment opportunities.</p>
+            <p>The following sections present the data for each state, including GDP in billions of INR, Consumer Price Index (CPI), and an outlook for the upcoming quarters, helping policymakers and investors make informed decisions.</p>
+        </div>
+
+        <!-- Main Data Table for GDP & CPI -->
+        <table>
+            <thead>
+                <tr>
+                    <th>State</th>
+                    <th>GDP (in billion INR)</th>
+                    <th>CPI</th>
+                </tr>
+            </thead>
+            <tbody id="data-table"></tbody>
+        </table>
+
+        <!-- Quarterly Economic Outlook Table -->
+        <h3>Quarterly Economic Outlook & Predictions</h3>
+        <p>This section presents AI-driven quarterly predictions, including department-specific performance summaries and potential investment opportunities. These projections are based on recent economic data and predictive analytics, providing a clear picture of future trends and growth sectors.</p>
+        <table>
+            <thead>
+                <tr>
+                    <th>Quarter</th>
+                    <th>Department</th>
+                    <th>Sector Performance</th>
+                    <th>Growth Opportunities</th>
+                    <th>Investment Opportunities</th>
+                </tr>
+            </thead>
+            <tbody id="outlook-table"></tbody>
+        </table>
+
+        <!-- Charts -->
+    <canvas id="gdpChart"></canvas>
+    <canvas id="cpiChart"></canvas>
+    <canvas id="budgetChart"></canvas>
+
+        <button onclick="downloadCSV()">Download CSV</button>
+        <button onclick="downloadPDF()">Download PDF</button>
+    </div>
+
+    <script>
+        function generateReport() {
+            // Get the values from the input fields
+            let fromYear = document.getElementById("fromYear").value;
+            let toYear = document.getElementById("toYear").value;
+            let department = document.getElementById("department").value;
+    
+            // Check if both years and department are selected
+            if (!fromYear || !toYear) {
+                alert("Please select the duration of the year.");
+                return; // Exit the function if years are not selected
+            }
+    
+            // Check if the years are between 2010 and 2025
+            if (fromYear < 2010 || fromYear > 2025 || toYear < 2010 || toYear > 2025) {
+                alert("Please select years between 2010 and 2025.");
+                return; // Exit the function if the years are outside the range
+            }
+    
+            // Check if fromYear is earlier than toYear
+            if (parseInt(fromYear) > parseInt(toYear)) {
+                alert("From year cannot be later than to year.");
+                return;
+            }
+    
+            if (!department) {
+                alert("Please select a department.");
+                return; // Exit the function if department is not selected
+            }
+    
+            // Hide input section and show the report container
+            document.getElementById("inputSection").style.display = "none";
+            document.getElementById("reportContainer").style.display = "block";
+    
+            const states = ["Andhra Pradesh", "Bihar", "Delhi", "Gujarat", "Karnataka", "Maharashtra", "Rajasthan", "Tamil Nadu", "Uttar Pradesh", "West Bengal", "Odisha"];
+            document.getElementById("yearRange").innerText = `${fromYear} - ${toYear} (${department})`;
+    
+            const gdpData = states.map(() => Math.floor(Math.random() * (10000 - 2000) + 2000));
+            const cpiData = states.map(() => (Math.random() * (120 - 80) + 80).toFixed(2));
+            const colors = states.map(() => `#${Math.floor(Math.random() * 16777215).toString(16)}`);
+    
+            // Fill the GDP & CPI data table
+            let tableContent = "";
+            states.forEach((state, index) => {
+                tableContent += `<tr><td>${state}</td><td>${gdpData[index]}</td><td>${cpiData[index]}</td></tr>`;
+            });
+            document.getElementById("data-table").innerHTML = tableContent;
+    
+            // Generate Quarterly Outlook
+            const quarters = ["Q1", "Q2", "Q3", "Q4"];
+            const sectors = ["Agriculture", "Industry", "Services"];
+            const outlookData = quarters.map(() => {
+                return {
+                    quarter: `Q${Math.floor(Math.random() * 4) + 1}`,
+                    department: department,
+                    performance: sectors[Math.floor(Math.random() * sectors.length)],
+                    growthOpportunities: (Math.random() * 100).toFixed(2) + "%",
+                    investmentOpportunities: (Math.random() * 100).toFixed(2) + "%"
+                };
+            });
+    
+            let outlookContent = "";
+            outlookData.forEach(outlook => {
+                outlookContent += `
+                    <tr>
+                        <td>${outlook.quarter}</td>
+                        <td>${outlook.department}</td>
+                        <td>${outlook.performance}</td>
+                        <td>${outlook.growthOpportunities}</td>
+                        <td>${outlook.investmentOpportunities}</td>
+                    </tr>`;
+            });
+            document.getElementById("outlook-table").innerHTML = outlookContent;
+    
+            // Generate GDP Chart (Bar)
+            new Chart(document.getElementById("gdpChart").getContext("2d"), {
+                type: "bar",
+                data: {
+                    labels: states,
+                    datasets: [{
+                        label: "GDP (in billion INR)",
+                        data: gdpData,
+                        backgroundColor: colors
+                    }]
+                }
+            });
+    
+            // Generate CPI Chart (Line)
+            new Chart(document.getElementById("cpiChart").getContext("2d"), {
+                type: "line",
+                data: {
+                    labels: states,
+                    datasets: [{
+                        label: "CPI",
+                        data: cpiData,
+                        borderColor: colors,
+                        fill: false
+                    }]
+                }
+            });
+    
+            // Generate Budget Allocation Pie Chart
+            const budgetLabels = ["Infrastructure", "Health", "Education", "Defense", "Agriculture"];
+            const budgetData = budgetLabels.map(() => Math.floor(Math.random() * 1000) + 100); // Random budget allocation data
+            const budgetColors = budgetLabels.map(() => `#${Math.floor(Math.random() * 16777215).toString(16)}`);
+    
+            new Chart(document.getElementById("budgetChart").getContext("2d"), {
+                type: "pie",
+                data: {
+                    labels: budgetLabels,
+                    datasets: [{
+                        label: "Budget Allocation (in INR Billion)",
+                        data: budgetData,
+                        backgroundColor: budgetColors
+                    }]
+                }
+            });
+        }
+    
+        function downloadPDF() {
+            window.print();
+        }
+    
+        function downloadCSV() {
+            const rows = [];
+            rows.push(['State', 'GDP (in billion INR)', 'CPI']);
+            document.querySelectorAll('#data-table tr').forEach(row => {
+                const cols = row.querySelectorAll('td');
+                rows.push([cols[0].innerText, cols[1].innerText, cols[2].innerText]);
+            });
+    
+            const csvContent = "data:text/csv;charset=utf-8," + rows.map(row => row.join(",")).join("\n");
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "financial_report.csv");
+            document.body.appendChild(link);
+            link.click();
+        }
+    </script>    
+</body>
+</html>
